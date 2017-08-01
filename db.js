@@ -1,32 +1,37 @@
 var pg = require('pg');
-var client = new pg.Client(process.env.DATABASE_URL);
+var database = process.env.DATABASE_URL || 'postgres://localhost/acmeusersdb';
+var client = new pg.Client(database);
 var Promise = require('bluebird');
-var seed = require('./seed.js');
+var seed = require('./seed');
 
 client.connect(function(err){
     if (err) console.log(err.message);
 })
 
 function query(sql, params){
+    console.log('in query');
+    console.log(sql);
+    console.log(params);
     return new Promise(function(resolve, reject){
         client.query(sql, params, function(err, result){
             if (err) reject(err);
-            else resolve(err);
+            else resolve(result);
         });
     });
 }
 
-function sync() {
-    query(seed.sql, [])
+function syncAndSeed() {
+    query(seed)
         .catch(function(err){
-            console.log(err.message);
+            return console.log(err.message);
         });
 }
 
 // Return the list of rows for managers only
-function(managersOnly){
+function getUsers(managersOnly){
     var sql = 'SELECT * FROM users where manager = $1';
     return query(sql, [parseInt(managersOnly)]).then(function(result){
+                // console.log(result);
                 return result.rows;
             });
 }
@@ -41,7 +46,7 @@ function getUser(id){
 
 // Creating user and return the ID of the created user
 function createUser(user){
-    var sql = 'INSERT INTO users (name, manager) VALUES ($1, $2)';
+    var sql = 'INSERT INTO users (name, manager) VALUES ($1, $2) RETURNING ID';
     return query(sql, [user.name, parseInt(user.manager)])
             .then(function(result){
                 return result.rows[0].id;
@@ -67,3 +72,39 @@ function updateUser(user){
             });
 
 }
+
+
+// Test code
+// console.log(seed);
+// console.log(database);
+// syncAndSeed();
+
+// query(`select * from users`, []).then(function(result){
+//     console.log(result.rows);
+// })
+
+// client.query('select * from users', [], function(err, result){
+//     console.log(result.rows);
+// })
+
+// getUsers(0).then(function(users){
+//     users.forEach(function(user){
+//         console.log(user);
+//     });
+// });
+
+// getUser(5).then(function(user){
+//     console.log(user);
+// })
+
+// createUser({name: 'Lebron James', manager: 0}).then(function(id){
+//     console.log(id);
+// })
+
+// deleteUser(6).then(function(result){
+//     console.log(result);
+// })
+
+// updateUser({id: 5, manager: 0, name: 'Kobe Bryant'}).then(function(result){
+//     console.log(result);
+// })
