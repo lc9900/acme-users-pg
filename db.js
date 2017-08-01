@@ -9,9 +9,9 @@ client.connect(function(err){
 })
 
 function query(sql, params){
-    console.log('in query');
-    console.log(sql);
-    console.log(params);
+    // console.log('in query');
+    // console.log(sql);
+    // console.log(params);
     return new Promise(function(resolve, reject){
         client.query(sql, params, function(err, result){
             if (err) reject(err);
@@ -22,6 +22,7 @@ function query(sql, params){
 
 function syncAndSeed() {
     query(seed)
+        .then(function(){ console.log('Database synced and seeded'); })
         .catch(function(err){
             return console.log(err.message);
         });
@@ -73,7 +74,14 @@ function updateUser(user){
 
 }
 
-
+module.exports = {
+    updateUser,
+    deleteUser,
+    syncAndSeed,
+    createUser,
+    getUsers,
+    getUser
+}
 // Test code
 // console.log(seed);
 // console.log(database);
