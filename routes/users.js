@@ -18,7 +18,10 @@ router.get('/', function(req, res){
             userCount = userList.length + managerCount;
             users = users.concat(userList);
             res.render('users', {userCount, managerCount, users});
-    });
+    })
+        .catch(function(err){
+            throw err.message;
+        });
 });
 
 router.get('/managers', function(req, res){
@@ -35,7 +38,10 @@ router.get('/managers', function(req, res){
         .then(function(userList){
             userCount = userList.length + managerCount;
             res.render('managers', {userCount, managerCount, users});
-    });
+    })
+        .catch(function(err){
+            throw err.message;
+        });
 
 });
 
@@ -49,6 +55,9 @@ router.post('/', function(req, res){
 
             if (is_manager) res.redirect('/users/managers');
             else res.redirect('/users');
+        })
+        .catch(function(err){
+            throw err.message;
         });
 });
 
@@ -59,6 +68,9 @@ router.delete('/:id', function(req, res){
     db.deleteUser(id).then(function(){
         res.redirect("/users");
     })
+    .catch(function(err){
+            throw err.message;
+    });
 });
 
 // Either make an user manager or demote a manager to regular user
@@ -70,4 +82,7 @@ router.put('/:id', function(req, res){
             if(is_manager) res.redirect('/users/managers');
             else res.redirect('/users');
         })
+        .catch(function(err){
+            throw err.message;
+        });
 });
