@@ -3,7 +3,7 @@ var db = require('../db');
 
 module.exports = router;
 
-router.get('/', function(req, res){
+router.get('/', function(req, res, next){
     var userCount = 0,
         managerCount = 0,
         users = [];
@@ -20,11 +20,12 @@ router.get('/', function(req, res){
             res.render('users', {userCount, managerCount, users});
     })
         .catch(function(err){
-            throw err.message;
+            // console.log('in catch');
+            next(err);
         });
 });
 
-router.get('/managers', function(req, res){
+router.get('/managers', function(req, res, next){
     var userCount = 0,
         managerCount = 0,
         users = [];
@@ -40,13 +41,13 @@ router.get('/managers', function(req, res){
             res.render('managers', {userCount, managerCount, users});
     })
         .catch(function(err){
-            throw err.message;
+            next(err);
         });
 
 });
 
 // Create User
-router.post('/', function(req, res){
+router.post('/', function(req, res, next){
     var userName = req.body.name;
     var is_manager = parseInt(req.body.is_manager) || 0;
     // console.log(is_manager);
@@ -57,24 +58,24 @@ router.post('/', function(req, res){
             else res.redirect('/users');
         })
         .catch(function(err){
-            throw err.message;
+            next(err)
         });
 });
 
 // Delete an user
-router.delete('/:id', function(req, res){
+router.delete('/:id', function(req, res, next){
     var id = req.params.id;
     // console.log('route detected');
     db.deleteUser(id).then(function(){
         res.redirect("/users");
     })
     .catch(function(err){
-            throw err.message;
+            next(err)
     });
 });
 
 // Either make an user manager or demote a manager to regular user
-router.put('/:id', function(req, res){
+router.put('/:id', function(req, res, next){
     var is_manager = parseInt(req.body.is_manager);
     var id = req.params.id;
     db.updateUser({id, manager: is_manager})
@@ -83,6 +84,6 @@ router.put('/:id', function(req, res){
             else res.redirect('/users');
         })
         .catch(function(err){
-            throw err.message;
+            next(err);
         });
 });
