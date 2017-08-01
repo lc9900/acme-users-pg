@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block home %}
+<!-- Nav tabs -->
+<ul id='categoryTabs' class="nav nav-tabs" role="tablist">
+    <li><a href="/">Home</a></li>
+    <li class="active"><a href="/users">Users{{userCount}}</a></li>
+    <li><a href="/users">Managers{{managerCount}}</a></li>
+</ul>
+
+<!-- Tab panes -->
+<div id="tabContent" class="tab-content">
+    <h2>Users</h2>
+
+    <ul class='list-group'>
+      {% for user in users %}
+        <li class='list-group-item'>
+          {{user.name}}
+          {% if user.manager === 1 %}
+            <label class="label label-success">Manager</label>
+
+          {% else %}
+
+          <form method='POST' action='/users/{{user.id}}?_method=PUT'>
+            <input type="hidden" name="is_manager" value="1">
+            <div class='form-group'>
+              <button class='btn btn-block btn-primary'>Make Manager</button>
+            </div>
+          </form>
+          <form method='POST' action='/users/{{user.id}}?_method=DELETE'>
+            <div class='form-group'>
+              <button class='btn btn-danger btn-block'>Delete</button>
+            </div>
+          </form>
+        </li>
+
+          {% endif %}
+      {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
