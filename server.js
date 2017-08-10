@@ -13,7 +13,7 @@ nunjucks.configure('views', {noCache: true, express: app});
 
 app.use('/vendor', express.static(path.join(__dirname, 'node_modules')));
 app.use(bodyParser.urlencoded({extended: false}));
-
+app.use(bodyParser.json());
 app.use(methodOverride('_method'));
 
 var port = process.env.PORT || 3000;
